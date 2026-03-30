@@ -5,7 +5,7 @@ edition = "2024"
 description = "CLI for PixelEagle visual regression testing"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/vleue/pixeleagle-cli"
-publish = "false"
+publish = false
 
 [dependencies]
 clap = { version = "4.5.53", features = ["derive", "env"] }
