@@ -38,19 +38,16 @@ async fn main() {
 
     println!("Uploading {} screenshots...", pngs.len());
     project
-        .upload_screenshots(
-            run_id,
-            pngs.iter().map(|path| (path.clone(), None)),
-        )
+        .upload_screenshots(run_id, pngs.iter().map(|path| (path.clone(), None)))
         .await;
     println!("Upload complete");
 
     // Step 3: Compare with the previous run
-    let previous_run_id = run_id.checked_sub(1).expect("No previous run to compare with");
+    let previous_run_id = run_id
+        .checked_sub(1)
+        .expect("No previous run to compare with");
     println!("Comparing run {run_id} with run {previous_run_id}...");
-    let comparison = project
-        .compare_two_runs(run_id, previous_run_id)
-        .await;
+    let comparison = project.compare_two_runs(run_id, previous_run_id).await;
 
     // Step 4: Wait for the comparison to finish
     let comparison = project.wait_for_comparison(comparison, 300).await;
