@@ -6,4 +6,4 @@ runs:
   steps:
     - name: Install pixeleagle-cli
       shell: bash
-      run: cargo install --git https://github.com/vleue/pixeleagle-cli --rev ${{ github.action_ref }}
+      run: cargo install --git https://github.com/vleue/pixeleagle-cli --rev ${{ github.action_sha }}
