@@ -27,7 +27,25 @@ runs:
   steps:
     - name: Install pixeleagle-cli
       shell: bash
-      run: cargo install --git https://github.com/vleue/pixeleagle-cli
+      env:
+        ACTION_REF: ${{ github.action_ref }}
+      run: |
+        REF="$ACTION_REF"
+        if [[ "$REF" == v* ]]; then
+          case "${{ runner.os }}-${{ runner.arch }}" in
+            Linux-X64)   TARGET="x86_64-unknown-linux-gnu" ;;
+            Linux-ARM64) TARGET="aarch64-unknown-linux-gnu" ;;
+            macOS-ARM64) TARGET="aarch64-apple-darwin" ;;
+            Windows-X64) TARGET="x86_64-pc-windows-msvc" ;;
+            *) echo "Unsupported platform: ${{ runner.os }}-${{ runner.arch }}"; exit 1 ;;
+          esac
+
+          URL="https://github.com/vleue/pixeleagle-cli/releases/download/${REF}/pixeleagle-cli-${TARGET}.tar.gz"
+          echo "Downloading pixeleagle-cli from ${URL}"
+          curl -fsSL "$URL" | tar xz -C /usr/local/bin
+        else
+          cargo install --git https://github.com/vleue/pixeleagle-cli
+        fi
 
     - name: Create run
       id: create-run
