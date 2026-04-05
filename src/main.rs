@@ -56,6 +56,10 @@ enum Commands {
         /// Name of the screenshot
         #[arg(long)]
         name: Option<String>,
+
+        /// Use the file name without extension as the screenshot name
+        #[arg(long)]
+        clean_name: bool,
     },
     /// Upload a screenshot to a run
     UploadScreenshots {
@@ -66,6 +70,10 @@ enum Commands {
         /// Path to the screenshot file to upload
         #[arg(required = true)]
         path: Vec<String>,
+
+        /// Use the file name without extension as the screenshot name
+        #[arg(long)]
+        clean_name: bool,
     },
     /// Trigger a run comparison with another
     CompareRun {
@@ -205,13 +213,28 @@ async fn main() {
                 println!("{id}");
             }
         }
-        Commands::UploadScreenshots { run_id, path } => {
+        Commands::UploadScreenshots {
+            run_id,
+            path,
+            clean_name,
+        } => {
             project
-                .upload_screenshots(run_id, path.into_iter().map(|path| (path, None)))
+                .upload_screenshots(
+                    run_id,
+                    path.into_iter().map(|path| (path, None)),
+                    clean_name,
+                )
                 .await;
         }
-        Commands::UploadScreenshot { run_id, path, name } => {
-            project.upload_screenshot(run_id, &path, name).await;
+        Commands::UploadScreenshot {
+            run_id,
+            path,
+            name,
+            clean_name,
+        } => {
+            project
+                .upload_screenshot(run_id, &path, name, clean_name)
+                .await;
         }
         Commands::CompareRun {
             run_arguments,

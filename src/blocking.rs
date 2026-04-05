@@ -25,18 +25,25 @@ impl Project {
         self.runtime.block_on(self.inner.create_run(metadata))
     }
 
-    pub fn upload_screenshot(&self, run_id: u32, path: &str, name: Option<String>) {
+    pub fn upload_screenshot(
+        &self,
+        run_id: u32,
+        path: &str,
+        name: Option<String>,
+        clean_name: bool,
+    ) {
         self.runtime
-            .block_on(self.inner.upload_screenshot(run_id, path, name));
+            .block_on(self.inner.upload_screenshot(run_id, path, name, clean_name));
     }
 
     pub fn upload_screenshots(
         &self,
         run_id: u32,
         paths: impl Iterator<Item = (String, Option<String>)>,
+        clean_name: bool,
     ) {
         self.runtime
-            .block_on(self.inner.upload_screenshots(run_id, paths));
+            .block_on(self.inner.upload_screenshots(run_id, paths, clean_name));
     }
 
     pub fn screenshot_need_upload(&self, run_id: u32, path: &str, name: String) -> bool {

@@ -34,7 +34,7 @@ async fn main() {
 
     println!("Uploading {} screenshots...", pngs.len());
     project
-        .upload_screenshots(run_id, pngs.iter().map(|path| (path.clone(), None)))
+        .upload_screenshots(run_id, pngs.iter().map(|path| (path.clone(), None)), false)
         .await;
     println!("Upload complete");
 

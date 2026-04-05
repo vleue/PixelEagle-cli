@@ -112,26 +112,41 @@ impl Project {
         run.id
     }
 
-    pub async fn upload_screenshot(&self, run_id: u32, path: &str, name: Option<String>) {
-        self.upload_screenshots(run_id, std::iter::once((path.to_string(), name)))
-            .await;
+    pub async fn upload_screenshot(
+        &self,
+        run_id: u32,
+        path: &str,
+        name: Option<String>,
+        clean_name: bool,
+    ) {
+        self.upload_screenshots(
+            run_id,
+            std::iter::once((path.to_string(), name)),
+            clean_name,
+        )
+        .await;
     }
 
     pub async fn upload_screenshots(
         &self,
         run_id: u32,
         paths: impl Iterator<Item = (String, Option<String>)>,
+        clean_name: bool,
     ) {
         for (path, name) in self
             .screenshots_need_upload(
                 run_id,
                 paths.map(|(path, name)| {
                     let name = name.unwrap_or_else(|| {
-                        std::path::Path::new(&path)
-                            .file_stem()
-                            .and_then(|s| s.to_str())
-                            .unwrap_or(&path)
-                            .to_string()
+                        if clean_name {
+                            std::path::Path::new(&path)
+                                .file_stem()
+                                .and_then(|s| s.to_str())
+                                .unwrap_or(&path)
+                                .to_string()
+                        } else {
+                            path.to_string()
+                        }
                     });
                     (path, name)
                 }),
