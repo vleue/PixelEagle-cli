@@ -126,7 +126,13 @@ impl Project {
             .screenshots_need_upload(
                 run_id,
                 paths.map(|(path, name)| {
-                    let name = name.unwrap_or_else(|| path.to_string());
+                    let name = name.unwrap_or_else(|| {
+                        std::path::Path::new(&path)
+                            .file_stem()
+                            .and_then(|s| s.to_str())
+                            .unwrap_or(&path)
+                            .to_string()
+                    });
                     (path, name)
                 }),
             )
