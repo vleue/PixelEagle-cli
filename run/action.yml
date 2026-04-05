@@ -1,0 +1,88 @@
+name: "PixelEagle Run"
+description: "Create a run, upload screenshots, and trigger a comparison"
+
+inputs:
+  token:
+    description: "PixelEagle authentication token"
+    required: true
+  pixel-eagle-url:
+    description: "PixelEagle server URL"
+    required: false
+    default: "https://pixel-eagle.com"
+  screenshots-path:
+    description: "Path to the directory containing screenshots to upload"
+    required: true
+  metadata:
+    description: "JSON metadata for the run (e.g. '{\"branch\": \"main\", \"os\": \"linux\"}')"
+    required: false
+  compare-filter:
+    description: "Metadata filters for comparison target (e.g. 'branch:main,ref:gold')"
+    required: false
+  compare-same:
+    description: "Metadata keys that must match between runs (e.g. 'os,gpu')"
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install pixeleagle-cli
+      shell: bash
+      run: cargo install --git https://github.com/vleue/pixeleagle-cli --rev ${{ github.action_ref }}
+
+    - name: Create run
+      id: create-run
+      shell: bash
+      env:
+        PIXEL_EAGLE_TOKEN: ${{ inputs.token }}
+        PIXEL_EAGLE_URL: ${{ inputs.pixel-eagle-url }}
+      run: |
+        args="--format json"
+        if [ -n "${{ inputs.metadata }}" ]; then
+          args="$args --metadata '${{ inputs.metadata }}'"
+        fi
+        run_id=$(eval pixeleagle-cli $args new-run | jq -r '.id')
+        echo "run-id=$run_id" >> "$GITHUB_OUTPUT"
+
+    - name: Upload screenshots
+      shell: bash
+      env:
+        PIXEL_EAGLE_TOKEN: ${{ inputs.token }}
+        PIXEL_EAGLE_URL: ${{ inputs.pixel-eagle-url }}
+      run: |
+        paths=""
+        for file in ${{ inputs.screenshots-path }}/*; do
+          if [ -f "$file" ]; then
+            paths="$paths $file"
+          fi
+        done
+        if [ -n "$paths" ]; then
+          pixeleagle-cli upload-screenshots --clean-name ${{ steps.create-run.outputs.run-id }} $paths
+        else
+          echo "No screenshots found in ${{ inputs.screenshots-path }}"
+          exit 1
+        fi
+
+    - name: Compare run
+      shell: bash
+      env:
+        PIXEL_EAGLE_TOKEN: ${{ inputs.token }}
+        PIXEL_EAGLE_URL: ${{ inputs.pixel-eagle-url }}
+      run: |
+        args=""
+        if [ -n "${{ inputs.compare-filter }}" ]; then
+          IFS=',' read -ra FILTERS <<< "${{ inputs.compare-filter }}"
+          for filter in "${FILTERS[@]}"; do
+            args="$args --filter $filter"
+          done
+        fi
+        if [ -n "${{ inputs.compare-same }}" ]; then
+          IFS=',' read -ra SAMES <<< "${{ inputs.compare-same }}"
+          for same in "${SAMES[@]}"; do
+            args="$args --same $same"
+          done
+        fi
+        if [ -z "$args" ]; then
+          echo "No comparison target specified (set compare-filter or compare-same)"
+          exit 1
+        fi
+        eval pixeleagle-cli compare-run ${{ steps.create-run.outputs.run-id }} $args --wait
