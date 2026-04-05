@@ -3,7 +3,6 @@ use std::{collections::HashMap, path::PathBuf};
 use clap::{Args, Parser, Subcommand, ValueEnum};
 use pixeleagle_cli::Project;
 
-
 #[derive(Parser, Debug)]
 #[command(name = "pixeleagle")]
 #[command(version, about, long_about = None)]
