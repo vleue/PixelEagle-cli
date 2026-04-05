@@ -1,0 +1,9 @@
+name: "Install PixelEagle CLI"
+description: "Install pixeleagle-cli from git"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install pixeleagle-cli
+      shell: bash
+      run: cargo install --git https://github.com/vleue/pixeleagle-cli --rev ${{ github.action_ref }}
