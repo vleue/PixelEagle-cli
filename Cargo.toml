@@ -7,6 +7,9 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/vleue/pixeleagle-cli"
 publish = false
 
+[features]
+blocking = []
+
 [dependencies]
 clap = { version = "4.5.53", features = ["derive", "env"] }
 reqwest = { version = "0.13", features = ["json", "multipart", "form"] }

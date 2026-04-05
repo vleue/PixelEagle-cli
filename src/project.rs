@@ -16,8 +16,17 @@ const MAX_RETRIES: u32 = 3;
 const INITIAL_BACKOFF_MS: u64 = 1000;
 
 pub struct Project {
-    pub url: Url,
+    pub(crate) url: Url,
     pub token: String,
+}
+
+impl Project {
+    pub fn new(url: &str, token: String) -> Self {
+        Self {
+            url: Url::parse(url).expect("Failed to parse Pixel Eagle URL"),
+            token,
+        }
+    }
 }
 
 fn is_retryable(status: reqwest::StatusCode) -> bool {

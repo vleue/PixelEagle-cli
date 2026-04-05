@@ -2,7 +2,7 @@ use std::{collections::HashMap, path::PathBuf};
 
 use clap::{Args, Parser, Subcommand, ValueEnum};
 use pixeleagle_cli::Project;
-use reqwest::Url;
+
 
 #[derive(Parser, Debug)]
 #[command(name = "pixeleagle")]
@@ -193,10 +193,7 @@ impl CompareWith {
 async fn main() {
     let cli = Cli::parse();
 
-    let project = Project {
-        url: Url::parse(&cli.pixel_eagle_url).expect("Failed to parse Pixel Eagle URL"),
-        token: cli.token,
-    };
+    let project = Project::new(&cli.pixel_eagle_url, cli.token);
 
     let json = matches!(cli.format, OutputFormat::Json);
 

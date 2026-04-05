@@ -1,17 +1,13 @@
 use std::env;
 
 use pixeleagle_cli::Project;
-use reqwest::Url;
 
 #[tokio::main]
 async fn main() {
     let url = env::var("PIXEL_EAGLE_URL").unwrap_or("https://pixel-eagle.com".to_string());
     let token = env::var("PIXEL_EAGLE_TOKEN").expect("PIXEL_EAGLE_TOKEN must be set");
 
-    let project = Project {
-        url: Url::parse(&url).expect("Invalid URL"),
-        token,
-    };
+    let project = Project::new(&url, token);
 
     // Step 1: Create a new run
     let run_id = project.create_run(None).await;
