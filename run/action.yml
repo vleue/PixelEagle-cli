@@ -31,6 +31,16 @@ runs:
         ACTION_REF: ${{ github.action_ref }}
       run: |
         REF="$ACTION_REF"
+
+        # If ref is not already a tag, check if it's a SHA that has a tag pointing to it
+        if [[ "$REF" != v* ]]; then
+          TAG=$(git ls-remote --tags https://github.com/vleue/pixeleagle-cli | grep "^${REF}" | sed 's|.*refs/tags/||' | sed 's|\^{}$||' | head -1)
+          if [[ -n "$TAG" ]]; then
+            echo "Resolved SHA ${REF} to tag ${TAG}"
+            REF="$TAG"
+          fi
+        fi
+
         if [[ "$REF" == v* ]]; then
           case "${{ runner.os }}-${{ runner.arch }}" in
             Linux-X64)   TARGET="x86_64-unknown-linux-gnu" ;;
