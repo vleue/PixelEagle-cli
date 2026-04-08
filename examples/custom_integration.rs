@@ -1,7 +1,10 @@
+#[cfg(not(feature = "self-hosted"))]
 use std::env;
 
+#[cfg(not(feature = "self-hosted"))]
 use pixeleagle_cli::Project;
 
+#[cfg(not(feature = "self-hosted"))]
 #[tokio::main]
 async fn main() {
     let token = env::var("PIXEL_EAGLE_TOKEN").expect("PIXEL_EAGLE_TOKEN must be set");
@@ -49,4 +52,9 @@ async fn main() {
 
     // Print results
     project.print_comparison(&comparison, true);
+}
+
+#[cfg(feature = "self-hosted")]
+fn main() {
+    panic!("This example is not compatible with the `self-hosted` feature");
 }
