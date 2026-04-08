@@ -9,9 +9,15 @@ publish = false
 
 [features]
 blocking = []
+cli = ["dep:clap"]
+
+[[bin]]
+name = "pixeleagle"
+path = "src/main.rs"
+required-features = ["cli"]
 
 [dependencies]
-clap = { version = "4.5.53", features = ["derive", "env"] }
+clap = { version = "4.5.53", features = ["derive", "env"], optional = true }
 reqwest = { version = "0.13", features = ["json", "multipart", "form"] }
 tokio = { version = "1.48", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }

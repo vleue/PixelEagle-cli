@@ -35,19 +35,19 @@ jobs:
           key: ${{ matrix.target }}
 
       - name: Build
-        run: cargo build --release --target ${{ matrix.target }}
+        run: cargo build --release --features cli --target ${{ matrix.target }}
 
       - name: Archive binary (unix)
         if: runner.os != 'Windows'
         run: |
           cd target/${{ matrix.target }}/release
-          tar czf ../../../pixeleagle-cli-${{ matrix.target }}.tar.gz pixeleagle-cli
+          tar czf ../../../pixeleagle-cli-${{ matrix.target }}.tar.gz pixeleagle
           cd ../../..
 
       - name: Archive binary (windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: Compress-Archive -Path target/${{ matrix.target }}/release/pixeleagle-cli.exe -DestinationPath pixeleagle-cli-${{ matrix.target }}.zip
+        run: Compress-Archive -Path target/${{ matrix.target }}/release/pixeleagle.exe -DestinationPath pixeleagle-cli-${{ matrix.target }}.zip
 
       - uses: actions/upload-artifact@v4
         with:

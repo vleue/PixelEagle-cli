@@ -15,7 +15,7 @@ From [GitHub releases](https://github.com/vleue/pixeleagle-cli/releases), downlo
 From source:
 
 ```bash
-cargo install --git https://github.com/vleue/pixeleagle-cli
+cargo install --git https://github.com/vleue/pixeleagle-cli --features cli
 ```
 
 ## Usage

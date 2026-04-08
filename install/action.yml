@@ -33,5 +33,5 @@ runs:
           echo "Downloading pixeleagle-cli from ${URL}"
           curl -fsSL "$URL" | tar xz -C /usr/local/bin
         else
-          cargo install --git https://github.com/vleue/pixeleagle-cli
+          cargo install --git https://github.com/vleue/pixeleagle-cli --features cli
         fi
