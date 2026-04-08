@@ -35,7 +35,7 @@ jobs:
           key: ${{ matrix.target }}
 
       - name: Build
-        run: cargo build --release --features cli --target ${{ matrix.target }}
+        run: cargo build --bin pixeleagle --release --features cli --target ${{ matrix.target }}
 
       - name: Archive binary (unix)
         if: runner.os != 'Windows'
