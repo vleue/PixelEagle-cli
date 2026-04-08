@@ -10,7 +10,7 @@ use reqwest::{Response, Url};
 use sha2::{Digest, Sha256};
 use uuid::Uuid;
 
-use crate::types::{ComparisonResult, Difference, Run, Screenshot};
+use crate::types::{ComparisonResult, Run, Screenshot};
 
 const MAX_RETRIES: u32 = 3;
 const INITIAL_BACKOFF_MS: u64 = 1000;
@@ -26,6 +26,10 @@ impl Project {
             url: Url::parse(url).expect("Failed to parse Pixel Eagle URL"),
             token,
         }
+    }
+
+    fn set_comparison_url(&self, comparison: &mut ComparisonResult) {
+        comparison.project_url = Some(self.url.clone());
     }
 }
 
@@ -265,10 +269,12 @@ impl Project {
             panic!("Failed to trigger comparison");
         }
 
-        response
+        let mut comparison = response
             .json::<ComparisonResult>()
             .await
-            .expect("Error parsing response")
+            .expect("Error parsing response");
+        self.set_comparison_url(&mut comparison);
+        comparison
     }
 
     pub async fn compare_two_runs_auto(
@@ -297,10 +303,12 @@ impl Project {
             panic!("Failed to trigger comparison");
         }
 
-        response
+        let mut comparison = response
             .json::<ComparisonResult>()
             .await
-            .expect("Error parsing response")
+            .expect("Error parsing response");
+        self.set_comparison_url(&mut comparison);
+        comparison
     }
 
     pub async fn get_comparison(&self, run_id_a: u32, run_id_b: u32) -> ComparisonResult {
@@ -324,10 +332,12 @@ impl Project {
             panic!("Failed to get comparison");
         }
 
-        response
+        let mut comparison = response
             .json::<ComparisonResult>()
             .await
-            .expect("Error parsing response")
+            .expect("Error parsing response");
+        self.set_comparison_url(&mut comparison);
+        comparison
     }
 
     pub async fn wait_for_comparison(
@@ -392,63 +402,10 @@ impl Project {
     }
 
     pub fn print_comparison(&self, comparison: ComparisonResult, with_details: bool) {
-        let url = self
-            .url
-            .join(&format!(
-                "project/{}/run/{}/compare/{}",
-                comparison.project_id, comparison.from, comparison.to,
-            ))
-            .unwrap()
-            .to_string();
-
-        println!("{url}");
+        println!("{}", comparison.get_url());
 
         if with_details {
-            println!(
-                "{} screenshots, {} unchanged",
-                comparison.new.len() + comparison.diff.len() + comparison.unchanged.len(),
-                comparison.unchanged.len()
-            );
-
-            if !comparison.missing.is_empty() {
-                println!("{} missing", comparison.missing.len());
-                for screenshot in &comparison.missing {
-                    println!(" - {}", screenshot.name);
-                }
-            }
-            if !comparison.new.is_empty() {
-                println!("{} new", comparison.new.len());
-                for screenshot in &comparison.new {
-                    println!(" - {}", screenshot.name);
-                }
-            }
-            if !comparison.diff.is_empty() {
-                let diff = comparison
-                    .diff
-                    .iter()
-                    .filter(|p| matches!(p.diff, Difference::Done(_)))
-                    .collect::<Vec<_>>();
-                if !diff.is_empty() {
-                    println!("{} changed", diff.len());
-                    for screenshot in &diff {
-                        let Difference::Done(x) = screenshot.diff else {
-                            continue;
-                        };
-                        println!(" - {} ({:.2}%)", screenshot.name, x * 100.0);
-                    }
-                }
-                let waiting = comparison
-                    .diff
-                    .iter()
-                    .filter(|p| !matches!(p.diff, Difference::Done(_)))
-                    .collect::<Vec<_>>();
-                if !waiting.is_empty() {
-                    println!("{} processing", waiting.len());
-                    for screenshot in &waiting {
-                        println!(" - {}", screenshot.name);
-                    }
-                }
-            }
+            println!("{}", comparison.get_detail());
         }
     }
 }
