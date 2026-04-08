@@ -11,7 +11,11 @@ struct Cli {
     token: String,
 
     #[cfg(feature = "self-hosted")]
-    #[arg(long, env = "PIXEL_EAGLE_URL")]
+    #[arg(
+        long,
+        env = "PIXEL_EAGLE_URL",
+        default_value = "https://pixel-eagle.com"
+    )]
     pixel_eagle_url: String,
 
     /// Output format
