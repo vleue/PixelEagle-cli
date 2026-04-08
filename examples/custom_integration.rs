@@ -48,5 +48,5 @@ async fn main() {
     let comparison = project.wait_for_comparison(comparison, 300).await;
 
     // Print results
-    project.print_comparison(comparison, true);
+    project.print_comparison(&comparison, true);
 }

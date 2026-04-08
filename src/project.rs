@@ -370,10 +370,10 @@ impl Project {
         comparison
     }
 
-    pub fn print_comparison_json(&self, comparison: ComparisonResult) {
+    pub fn print_comparison_json(&self, comparison: &ComparisonResult) {
         println!(
             "{}",
-            serde_json::to_string(&comparison).expect("Failed to serialize comparison")
+            serde_json::to_string(comparison).expect("Failed to serialize comparison")
         );
     }
 
@@ -413,7 +413,7 @@ impl Project {
         std::fs::write(output, &bytes).expect("Failed to write file");
     }
 
-    pub fn print_comparison(&self, comparison: ComparisonResult, with_details: bool) {
+    pub fn print_comparison(&self, comparison: &ComparisonResult, with_details: bool) {
         println!("{}", comparison.get_url());
 
         if with_details {

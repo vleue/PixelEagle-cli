@@ -111,11 +111,11 @@ impl Project {
             .block_on(self.inner.download_diff(project_id, hash_a, hash_b, output));
     }
 
-    pub fn print_comparison_json(&self, comparison: ComparisonResult) {
+    pub fn print_comparison_json(&self, comparison: &ComparisonResult) {
         self.inner.print_comparison_json(comparison);
     }
 
-    pub fn print_comparison(&self, comparison: ComparisonResult, with_details: bool) {
+    pub fn print_comparison(&self, comparison: &ComparisonResult, with_details: bool) {
         self.inner.print_comparison(comparison, with_details);
     }
 }

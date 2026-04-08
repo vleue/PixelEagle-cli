@@ -254,9 +254,9 @@ async fn main() {
                     .await;
             }
             if json {
-                project.print_comparison_json(comparison);
+                project.print_comparison_json(&comparison);
             } else {
-                project.print_comparison(comparison, run_arguments.print_details);
+                project.print_comparison(&comparison, run_arguments.print_details);
             }
         }
         Commands::GetComparison {
@@ -271,9 +271,9 @@ async fn main() {
                     .await;
             }
             if json {
-                project.print_comparison_json(comparison);
+                project.print_comparison_json(&comparison);
             } else {
-                project.print_comparison(comparison, run_arguments.print_details);
+                project.print_comparison(&comparison, run_arguments.print_details);
             }
         }
         Commands::DownloadScreenshot {
