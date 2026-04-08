@@ -10,11 +10,8 @@ struct Cli {
     #[arg(long, env = "PIXEL_EAGLE_TOKEN")]
     token: String,
 
-    #[arg(
-        long,
-        env = "PIXEL_EAGLE_URL",
-        default_value = "https://pixel-eagle.com"
-    )]
+    #[cfg(feature = "self-hosted")]
+    #[arg(long, env = "PIXEL_EAGLE_URL")]
     pixel_eagle_url: String,
 
     /// Output format
@@ -200,7 +197,10 @@ impl CompareWith {
 async fn main() {
     let cli = Cli::parse();
 
+    #[cfg(feature = "self-hosted")]
     let project = Project::new(&cli.pixel_eagle_url, cli.token);
+    #[cfg(not(feature = "self-hosted"))]
+    let project = Project::new(cli.token);
 
     let json = matches!(cli.format, OutputFormat::Json);
 

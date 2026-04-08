@@ -10,6 +10,19 @@ pub struct Project {
 }
 
 impl Project {
+    #[cfg(not(feature = "self-hosted"))]
+    pub fn new(token: String) -> Self {
+        let runtime = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .expect("Failed to create tokio runtime");
+        Self {
+            inner: crate::Project::new(token),
+            runtime,
+        }
+    }
+
+    #[cfg(feature = "self-hosted")]
     pub fn new(url: &str, token: String) -> Self {
         let runtime = tokio::runtime::Builder::new_current_thread()
             .enable_all()

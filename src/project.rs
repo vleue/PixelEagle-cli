@@ -15,12 +15,24 @@ use crate::types::{ComparisonResult, Run, Screenshot};
 const MAX_RETRIES: u32 = 3;
 const INITIAL_BACKOFF_MS: u64 = 1000;
 
+#[cfg(not(feature = "self-hosted"))]
+const DEFAULT_URL: &str = "https://pixel-eagle.com";
+
 pub struct Project {
     pub(crate) url: Url,
     pub token: String,
 }
 
 impl Project {
+    #[cfg(not(feature = "self-hosted"))]
+    pub fn new(token: String) -> Self {
+        Self {
+            url: Url::parse(DEFAULT_URL).expect("Failed to parse Pixel Eagle URL"),
+            token,
+        }
+    }
+
+    #[cfg(feature = "self-hosted")]
     pub fn new(url: &str, token: String) -> Self {
         Self {
             url: Url::parse(url).expect("Failed to parse Pixel Eagle URL"),
