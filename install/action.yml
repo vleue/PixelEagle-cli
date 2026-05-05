@@ -31,7 +31,7 @@ runs:
 
           URL="https://github.com/vleue/pixeleagle-cli/releases/download/${REF}/pixeleagle-cli-${TARGET}.tar.gz"
           echo "Downloading pixeleagle-cli from ${URL}"
-          curl -fsSL "$URL" | tar xz -C /usr/local/bin
+          curl -fsSL --retry 5 --retry-delay 2 --retry-all-errors "$URL" | tar xz -C /usr/local/bin
         else
           cargo install --git https://github.com/vleue/pixeleagle-cli --features cli
         fi
